@@ -39,3 +39,16 @@ class TestAlembic:
         # bug fixed by autocreate_hypertable_indexes()
         assert True
 
+    def test_alembic_migration_doesnt_try_to_create_hypertable_indexes_when_creating_table(self,engine):
+        #TODO: write a test for this
+        # When creating a hypertable, alembic should not emit a CREATE INDEX for the auto-created timescaledb
+        #  time column index. See: TimescaledbImpl.create_table in dialect.py
+        assert True
+
+    def test_alembic_ignores_timescaledb_indexes(self,engine):
+        #TODO: write a test for this
+        # tests the functionality of alembic_ignore_timescaledb_indexes - if a hypertable time column index
+        #  is changed, that change should be ignored by alembic migrations, as if the index had been ignored via
+        #  alembic's include_object hook
+        assert True
+

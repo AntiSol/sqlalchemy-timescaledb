@@ -194,20 +194,3 @@ class TimescaledbAsyncpgDialect(TimescaledbDialect, PGDialect_asyncpg):
     driver = 'asyncpg'
     supports_statement_cache = True
 
-
-"""
-This function blatantly stolen from venv/lib/python3.11/site-packages/alembic/ddl/postgresql.py
-You shouldn't need to add any of these, see TimescaledbDDLCompiler.patch_postgres_compilers.
-
-@compiles(PostgresqlColumnType, "timescaledb")
-def visit_column_type(
-    element: PostgresqlColumnType, compiler: PGDDLCompiler, **kw
-) -> str:
-    return "%s %s %s %s" % (
-        alter_table(compiler, element.table_name, element.schema),
-        alter_column(compiler, element.column_name),
-        "TYPE %s" % format_type(compiler, element.type_),
-        "USING %s" % element.using if element.using else "",
-    )
-
-"""
