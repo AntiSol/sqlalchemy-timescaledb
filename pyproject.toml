@@ -1,7 +1,8 @@
 [project]
 name = "sqlalchemy-timescaledb"
-version = "0.4"
+version = "0.5"
 authors = [
+  { name="Dale Magee", email="antisol+timescaledb@antisol.org" },
   { name="Andrei Kliatsko", email="andrey.daraschenka@gmail.com" },
 ]
 description = "A SQLAlchemy dialect for TimescaleDB"
@@ -23,7 +24,7 @@ test = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/dorosch/sqlalchemy-timescaledb"
+"Homepage" = "https://github.com/antisol/sqlalchemy-timescaledb"
 
 [project.entry-points."sqlalchemy.dialects"]
 "timescaledb" = "sqlalchemy_timescaledb.dialect:TimescaledbPsycopg2Dialect"
