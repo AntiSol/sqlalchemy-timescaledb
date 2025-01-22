@@ -33,9 +33,9 @@ class TestAlembic:
         Path(migration_file).unlink()
         Base.metadata.create_all(bind=engine)
 
-    def test_alembic_migration_doesnt_drop_indices_created_by_timescaledb(self,engine):
+    def test_alembic_migration_doesnt_drop_indexes_created_by_timescaledb(self,engine):
         #TODO: write a test for this
         # see: https://github.com/dorosch/sqlalchemy-timescaledb/issues/21 for details of the bug
-        # bug fixed by autocreate_hypertable_indices()
+        # bug fixed by autocreate_hypertable_indexes()
         assert True
 

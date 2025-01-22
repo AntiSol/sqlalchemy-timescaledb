@@ -4,6 +4,11 @@ from sqlalchemy.dialects.postgresql.base import PGDDLCompiler, PGDialect
 from sqlalchemy.dialects.postgresql.psycopg2 import PGDialect_psycopg2
 from sqlalchemy.sql.elements import ClauseElement
 
+import logging
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
+
 try:
     import alembic
 except ImportError:
@@ -13,6 +18,48 @@ else:
 
     class TimescaledbImpl(postgresql.PostgresqlImpl):
         __dialect__ = 'timescaledb'
+
+        def create_table(self, table, **kw) -> None:
+            """
+            The default CREATE TABLE implementation also creates any indexes
+             attached to the table (see: alembic/ddl/impl.py:410). This is an issue if we have an Index object for the
+             auto-created timescaledb index, because it would attempt to create
+             a duplicate index.
+
+            Here we remove the timescaledb index from the list before running the
+             regular CREATE TABLE implementation, to avoid that.
+
+            This is hacky and perhaps not ideal. I'd love to hear suggestions on alternatives :)
+            """
+
+            if hasattr(table, "dialect_options"):
+                opts = table.dialect_options
+                tsdb_opts = opts.get('timescaledb', {})
+                ht_opts = tsdb_opts.get('hypertable', {})
+                time_col = ht_opts.get('time_column_name', "")
+
+            if time_col:
+                # this is a hypertable with a time column specified,
+                #  filter indexes out
+
+                # expected name for timescaledb index:
+                tsdb_index_name = f"{table.name}_{time_col}_idx"
+
+                new_indexes = []
+                for idx in table.indexes:
+                    if idx.name != tsdb_index_name:
+                        new_indexes.append(idx)
+                    else:
+                        log.info(f"TimescaledbImpl.create_table: skipping timescaledb index creation for '{idx.name}'")
+
+                # replace table indexes with the filtered set
+                table.indexes = set(new_indexes)
+
+            return super().create_table(table, **kw)
+
+
+
+
 
 def all_subclasses(cls, include_cls: bool = True) -> set:
     """
